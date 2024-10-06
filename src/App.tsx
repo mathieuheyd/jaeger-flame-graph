@@ -1,10 +1,13 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { FlameChartNode } from 'flame-chart-js';
 import { FlameChartComponent } from 'flame-chart-js/react';
+import './App.css';
+import { parseSingleTrace } from './jaeger/trace';
 
 function App() {
-  const flameChartData = [{
+  const [flameChartData, setFlameChartData] = useState<FlameChartNode[] | undefined>();
+
+  const defaultFlameChart = [{
     name: 'foo',
     start: 300,
     duration: 200,
@@ -35,12 +38,36 @@ function App() {
     }
   };
 
+  function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    var selectedFiles = event.target.files;
+    if (selectedFiles === null || selectedFiles.length === 0)
+      return;
+
+    var reader = new FileReader();
+    reader.readAsText(selectedFiles[0], "UTF-8");
+    reader.onload = function (progressEvent: ProgressEvent<FileReader>) {
+      const trace = parseSingleTrace(progressEvent.target?.result as string);
+      console.log(trace);
+      setFlameChartData(defaultFlameChart);
+    }
+    reader.onerror = function (error) {
+        throw error;
+    }
+
+    return [];
+  }
+
   return (
     <div className="App">
-      <FlameChartComponent
-        data={flameChartData}
-        settings={settings}
+      { flameChartData === undefined &&
+        <input type="file" onChange={handleFileUpload} />
+      }
+      { flameChartData !== undefined &&
+        <FlameChartComponent
+          data={flameChartData}
+          settings={settings}
         />
+      }
     </div>
   );
 }

@@ -1,25 +1,29 @@
-type Trace = {
+export type Trace = {
   data: TraceData[],
 }
 
-type TraceData = {
-  processes: { [key: string] : Process },
+export type TraceData = {
+  processes: ProcessesMap,
   spans: Span[],
   traceId: string,
   warning: any
 }
 
-type Process = {
+export type ProcessesMap = {
+  [key: string] : Process
+};
+
+export type Process = {
   serviceName: string,
   tags: any[],
 }
 
-type Span = {
+export type Span = {
   duration: number,
   logs: any[],
   operationName: string,
-  processId: string,
-  references: any[],
+  processID: string,
+  references: SpanReference[],
   spanID: string,
   startTime: number,
   tags: any[],
@@ -27,9 +31,14 @@ type Span = {
   warning: any
 }
 
+export type SpanReference = {
+  refType: string;
+  spanID: string;
+}
+
 function parseTrace(text: string) : Trace {
   var trace = JSON.parse(text);
-  throw trace;
+  return trace;
 }
 
 function parseSingleTrace(text: string) : TraceData {
@@ -39,4 +48,7 @@ function parseSingleTrace(text: string) : TraceData {
   return trace.data[0];
 }
 
-export { parseTrace, parseSingleTrace }
+export {
+  parseTrace,
+  parseSingleTrace
+}

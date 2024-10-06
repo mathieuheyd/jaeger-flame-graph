@@ -3,25 +3,10 @@ import { FlameChartNode } from 'flame-chart-js';
 import { FlameChartComponent } from 'flame-chart-js/react';
 import './App.css';
 import { parseSingleTrace } from './jaeger/trace';
+import { buildFlameChart } from './jaeger/trace-flame-chart';
 
 function App() {
   const [flameChartData, setFlameChartData] = useState<FlameChartNode[] | undefined>();
-
-  const defaultFlameChart = [{
-    name: 'foo',
-    start: 300,
-    duration: 200,
-    type: 'task',
-    children: [
-        {
-            name: 'foo',
-            start: 310,
-            duration: 50,
-            type: 'sub-task',
-            color: '#AA0000',
-        },
-    ],
-  }];
 
   const settings = {
     hotkeys: {
@@ -47,14 +32,13 @@ function App() {
     reader.readAsText(selectedFiles[0], "UTF-8");
     reader.onload = function (progressEvent: ProgressEvent<FileReader>) {
       const trace = parseSingleTrace(progressEvent.target?.result as string);
-      console.log(trace);
-      setFlameChartData(defaultFlameChart);
+      const flameChart = buildFlameChart(trace);
+      console.log(flameChart);
+      setFlameChartData([flameChart]);
     }
     reader.onerror = function (error) {
         throw error;
     }
-
-    return [];
   }
 
   return (
@@ -66,6 +50,7 @@ function App() {
         <FlameChartComponent
           data={flameChartData}
           settings={settings}
+          className="flameChart"
         />
       }
     </div>

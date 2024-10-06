@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { FlameChartNode } from 'flame-chart-js';
 import { FlameChartComponent } from 'flame-chart-js/react';
-import './App.css';
 import { parseSingleTrace } from './jaeger/trace';
 import { buildFlameChart } from './jaeger/trace-flame-chart';
+import './App.css';
 
 function App() {
   const [flameChartData, setFlameChartData] = useState<FlameChartNode[] | undefined>();

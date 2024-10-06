@@ -2,6 +2,10 @@ import { FlameChartNode } from "flame-chart-js/.";
 import { ProcessesMap, Span, TraceData } from "./trace";
 import { unclutter } from "../flame-chart/flame-chart-utils";
 
+export type EnrichedFlameChartNode = FlameChartNode & {
+  sourceSpan: Span;
+}
+
 function buildFlameChart(trace: TraceData): FlameChartNode {
   const spansByParentId = new Map<string, Span[]>();
   const rootSpans: Span[] = [];
@@ -26,7 +30,7 @@ function buildFlameChart(trace: TraceData): FlameChartNode {
   return flameChart;
 }
 
-function buildNode(span: any, spansByParentId: Map<string, any[]>, traceStartTime: number, processes: ProcessesMap): FlameChartNode {
+function buildNode(span: any, spansByParentId: Map<string, any[]>, traceStartTime: number, processes: ProcessesMap): EnrichedFlameChartNode {
   var childrenSpans = spansByParentId.get(span.spanID);
   var children: FlameChartNode[] = [];
   if (childrenSpans !== undefined) {
@@ -37,7 +41,8 @@ function buildNode(span: any, spansByParentId: Map<string, any[]>, traceStartTim
     start: span.startTime / 1000 - traceStartTime / 1000,
     duration: span.duration / 1000,
     children: children,
-    color: getSpanColor(span, processes)
+    color: getSpanColor(span, processes),
+    sourceSpan: span
   };
 }
 

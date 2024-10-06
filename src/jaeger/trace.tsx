@@ -15,7 +15,7 @@ export type ProcessesMap = {
 
 export type Process = {
   serviceName: string,
-  tags: any[],
+  tags: Field[],
 }
 
 export type Span = {
@@ -26,7 +26,7 @@ export type Span = {
   references: SpanReference[],
   spanID: string,
   startTime: number,
-  tags: any[],
+  tags: Field[],
   traceId: string,
   warning: any
 }
@@ -34,6 +34,17 @@ export type Span = {
 export type SpanReference = {
   refType: string;
   spanID: string;
+}
+
+export type Log = {
+  fields: Field[];
+  timestamp: number;
+}
+
+export type Field = {
+  key: string;
+  type: string;
+  value: string;
 }
 
 function parseTrace(text: string) : Trace {

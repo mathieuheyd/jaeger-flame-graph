@@ -1,4 +1,10 @@
 .flameChart {
   width: 100%;
-  height: 99vh;
+  height: 80vh;
+}
+
+.spanDetails {
+  width: 100%;
+  height: 19vh;
+  overflow-y: scroll;
 }

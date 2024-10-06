@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { FlameChartNode } from 'flame-chart-js';
-import { FlameChartComponent } from 'flame-chart-js/react';
-import { parseSingleTrace } from './jaeger/trace';
-import { buildFlameChart } from './jaeger/trace-flame-chart';
+import { FlameChartComponent, NodeTypes } from 'flame-chart-js/react';
+import { parseSingleTrace, Span } from './jaeger/trace';
+import { buildFlameChart, EnrichedFlameChartNode } from './jaeger/trace-flame-chart';
+import SpanDetails from './components/span-details';
 import './App.css';
 
 function App() {
   const [flameChartData, setFlameChartData] = useState<FlameChartNode[] | undefined>();
+  const [selectedSpan, setSelectedSpan] = useState<Span | undefined>();
 
   const settings = {
     hotkeys: {
@@ -16,9 +18,6 @@ function App() {
       fastMultiplayer: 5, // speed multiplier when zooming and scrolling (activated by Shift key)
     },
     options: {
-      tooltip: () => {
-          /*...*/
-      }, // see section "Custom Tooltip" below
       timeUnits: 'ms',
     }
   };
@@ -33,11 +32,17 @@ function App() {
     reader.onload = function (progressEvent: ProgressEvent<FileReader>) {
       const trace = parseSingleTrace(progressEvent.target?.result as string);
       const flameChart = buildFlameChart(trace);
-      console.log(flameChart);
       setFlameChartData([flameChart]);
     }
     reader.onerror = function (error) {
         throw error;
+    }
+  }
+
+  function onSelect(data: NodeTypes) {
+    if (data?.type === 'flame-chart-node') {
+      console.log(data.node?.source);
+      setSelectedSpan((data.node?.source as EnrichedFlameChartNode)?.sourceSpan);
     }
   }
 
@@ -47,11 +52,17 @@ function App() {
         <input type="file" onChange={handleFileUpload} />
       }
       { flameChartData !== undefined &&
-        <FlameChartComponent
-          data={flameChartData}
-          settings={settings}
-          className="flameChart"
-        />
+        <div>
+          <FlameChartComponent
+            data={flameChartData}
+            settings={settings}
+            className="flameChart"
+            onSelect={onSelect}
+          />
+          <div className="spanDetails">
+            <SpanDetails span={selectedSpan} />
+          </div>
+        </div>
       }
     </div>
   );

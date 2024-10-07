@@ -48,7 +48,13 @@ function App() {
   return (
     <div className="App">
       { flameChartData === undefined &&
-        <input type="file" onChange={handleFileUpload} />
+        <div className="fileSelect">
+          <label htmlFor="select-file">
+            <img alt="jaeger-icon" src="https://www.jaegertracing.io/img/jaeger-icon-reverse-color.svg" />
+            Load a Jaeger trace
+          </label>
+          <input id="select-file" type="file" onChange={handleFileUpload} />
+        </div>
       }
       { flameChartData !== undefined &&
         <div>

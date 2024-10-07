@@ -1,3 +1,37 @@
+.fileSelect {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fileSelect > label {
+  width: 400px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(77, 129, 129);
+  border: 2px dashed darkslategray;
+  cursor: pointer;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-weight: bold;
+  font-size: x-large;
+}
+
+.fileSelect > label > img {
+  width: 100px;
+  height: 100px;
+}
+
+.fileSelect > input {
+  opacity: 0;
+  position: absolute;
+  z-index: -1;
+}
+
 .flameChart {
   width: 100%;
   height: 80vh;

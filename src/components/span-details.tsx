@@ -6,9 +6,9 @@ export type SpanDetailsProps = {
 
 function SpanDetails(props: SpanDetailsProps) {
   return (
-    <ul>
+    <ul className="code">
       { props.span?.tags.map(tag => {
-        return (<li>{tag.key}: {tag.value}</li>);
+        return (<li key={tag.key}><b>{tag.key}</b>: {tag.value}</li>);
       }) }
     </ul>
   );

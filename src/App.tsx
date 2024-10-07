@@ -41,7 +41,6 @@ function App() {
 
   function onSelect(data: NodeTypes) {
     if (data?.type === 'flame-chart-node') {
-      console.log(data.node?.source);
       setSelectedSpan((data.node?.source as EnrichedFlameChartNode)?.sourceSpan);
     }
   }

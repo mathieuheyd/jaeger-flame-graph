@@ -8,7 +8,7 @@ function SpanDetails(props: SpanDetailsProps) {
   return (
     <ul className="code">
       { props.span?.tags.map(tag => {
-        return (<li key={tag.key}><b>{tag.key}</b>: {tag.value}</li>);
+        return (<li key={tag.key}><b>{tag.key}</b>: <pre>{tag.value}</pre></li>);
       }) }
     </ul>
   );

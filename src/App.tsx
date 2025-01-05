@@ -32,7 +32,7 @@ function App() {
     reader.onload = function (progressEvent: ProgressEvent<FileReader>) {
       const trace = parseSingleTrace(progressEvent.target?.result as string);
       const flameChart = buildFlameChart(trace);
-      setFlameChartData([flameChart]);
+      setFlameChartData(flameChart);
     }
     reader.onerror = function (error) {
         throw error;

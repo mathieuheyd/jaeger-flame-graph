@@ -6,9 +6,9 @@ export type EnrichedFlameChartNode = FlameChartNode & {
   sourceSpan: Span;
 }
 
-function buildFlameChart(trace: TraceData): FlameChartNode {
+function buildFlameChart(trace: TraceData): FlameChartNode[] {
   const spansByParentId = new Map<string, Span[]>();
-  const rootSpans: Span[] = [];
+  let rootSpans: Span[] = [];
   trace.spans.forEach(span => {
     if (span.references.length !== 1 || span.references[0].refType !== 'CHILD_OF')
       rootSpans.push(span);
@@ -23,11 +23,24 @@ function buildFlameChart(trace: TraceData): FlameChartNode {
     }
   });
 
-  const flameChart = buildNode(rootSpans[0], spansByParentId, rootSpans[0].startTime, trace.processes);
+  if (rootSpans.length === 0) {
+    // missing root span, it has most likely not been closed properly
+    var existingSpans = new Set<string>();
+    trace.spans.forEach(span => {
+      existingSpans.add(span.spanID);
+    });
+    var nodesWithMissingParent = [...spansByParentId.entries()].filter(entry => !existingSpans.has(entry[0])).flatMap(entry => entry[1]);
+    rootSpans = nodesWithMissingParent;
+  }
 
-  unclutter(flameChart);
+  var traceStartTime = Math.min(...rootSpans.map(span => span.startTime));
+  const flameChartNodes = rootSpans.map(span => buildNode(span, spansByParentId, traceStartTime, trace.processes));
 
-  return flameChart;
+  flameChartNodes.forEach(flameChartNode => {
+    unclutter(flameChartNode);
+  });
+
+  return flameChartNodes;
 }
 
 function buildNode(span: any, spansByParentId: Map<string, any[]>, traceStartTime: number, processes: ProcessesMap): EnrichedFlameChartNode {

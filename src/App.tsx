@@ -9,6 +9,8 @@ import './App.css';
 function App() {
   const [flameChartData, setFlameChartData] = useState<FlameChartNode[] | undefined>();
   const [selectedSpan, setSelectedSpan] = useState<Span | undefined>();
+  const [selectedAt, setSelectedAt] = useState<number | undefined>();
+  const [zoom, setZoom] = useState<{start: number; end: number;} | undefined>();
 
   const settings = {
     hotkeys: {
@@ -41,8 +43,23 @@ function App() {
 
   function onSelect(data: NodeTypes) {
     if (data?.type === 'flame-chart-node') {
-      setSelectedSpan((data.node?.source as EnrichedFlameChartNode)?.sourceSpan);
+      const now = Date.now();
+      const source = (data.node?.source as EnrichedFlameChartNode);
+      const sourceSpan = source?.sourceSpan;
+      if (sourceSpan !== selectedSpan) {
+        setSelectedSpan(sourceSpan);
+      } else if (selectedAt !== undefined && now - selectedAt < 500) {
+        zoomOnNode(source);
+      }
+      setSelectedAt(now);
     }
+  }
+
+  function zoomOnNode(node: EnrichedFlameChartNode) {
+    var padding = node.duration * 0.05;
+    var start = Math.max(0, node.start - padding);
+    var end = node.start + node.duration + padding;
+    setZoom({start: start, end: end});
   }
 
   return (
@@ -63,6 +80,7 @@ function App() {
             settings={settings}
             className="flameChart"
             onSelect={onSelect}
+            zoom={zoom}
           />
           <div className="spanDetails">
             <SpanDetails span={selectedSpan} />

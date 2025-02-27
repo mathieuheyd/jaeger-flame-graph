@@ -19,9 +19,11 @@ type TabDetails = {
 function SpanDetails(props: SpanDetailsProps) {
   const [selectedTab, setSelectedTab] = useState<Tab>(Tab.Tags);
 
+  const logLines = props.span?.logs.filter(isLogLine) ?? [];
+
   const tabs: TabDetails[] = props.span === undefined ? [] : [
     {type: Tab.Tags, name: `Tags (${props.span.tags.length})`},
-    {type: Tab.Logs, name: `Logs (${props.span.logs.length})`},
+    {type: Tab.Logs, name: `Logs (${logLines.length})`},
   ];
 
   const dateFormatOptions: Intl.DateTimeFormatOptions = {
@@ -46,7 +48,7 @@ function SpanDetails(props: SpanDetailsProps) {
           { selectedTab === Tab.Tags && props.span?.tags.map((tag, i) => {
             return (<li key={i}><b>{tag.key}</b>: <pre>{tag.value}</pre></li>);
           }) }
-          { selectedTab === Tab.Logs && props.span?.logs.filter(log => isLogLine(log)).map(log => {
+          { selectedTab === Tab.Logs && logLines.map(log => {
             return (<li key={log.timestamp}><b>{new Date(log.timestamp / 1000).toLocaleString('en-US', dateFormatOptions)}</b>: <pre>{formatLogLine(log)}</pre></li>);
           }) }
         </ul>

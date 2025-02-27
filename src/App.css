@@ -64,3 +64,7 @@
   height: 100%;
   overflow-y: scroll;
 }
+
+.spanDetails .content  pre {
+  white-space: pre-wrap;
+}

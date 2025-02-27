@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FlameChart, FlameChartNode, FlameChartPlugin } from 'flame-chart-js';
+import { FlameChart, FlameChartNode, FlameChartPlugin, FlatTreeNode } from 'flame-chart-js';
 import { FlameChartComponent, NodeTypes } from 'flame-chart-js/react';
 import { parseSingleTrace, Span } from './jaeger/trace';
 import { buildFlameChart, EnrichedFlameChartNode } from './jaeger/trace-flame-chart';
@@ -11,6 +11,7 @@ function App() {
   const [selectedSpan, setSelectedSpan] = useState<Span | undefined>();
   const [selectedAt, setSelectedAt] = useState<number | undefined>();
   const [zoom, setZoom] = useState<{start: number; end: number;} | undefined>();
+  const [position, setPosition] = useState<{x: number; y: number;} | undefined>();
 
   var flameChartInstance: FlameChart | undefined = undefined;
   function setFlameChartInstance(instance: FlameChart) {
@@ -53,18 +54,21 @@ function App() {
       const sourceSpan = source?.sourceSpan;
       if (sourceSpan !== selectedSpan) {
         setSelectedSpan(sourceSpan);
-      } else if (selectedAt !== undefined && now - selectedAt < 300) {
-        zoomOnNode(source);
+      } else if (data.node !== null && selectedAt !== undefined && now - selectedAt < 300) {
+        zoomOnNode(data.node);
       }
       setSelectedAt(now);
     }
   }
 
-  function zoomOnNode(node: EnrichedFlameChartNode) {
-    var padding = node.duration * 0.05;
-    var start = Math.max(0, node.start - padding);
-    var end = node.start + node.duration + padding;
+  function zoomOnNode(node: FlatTreeNode) {
+    var padding = node.source.duration * 0.05;
+    var start = Math.max(0, node.source.start - padding);
+    var end = node.source.start + node.source.duration + padding;
     setZoom({start: start, end: end});
+
+    const nodeY = node.level * 17;
+    setPosition({x: 0, y: Math.max(0, nodeY - 50)});
   }
 
   function selectNode(nodeToSelect: EnrichedFlameChartNode) {
@@ -81,6 +85,9 @@ function App() {
 
     flameChartPlugin.selectedRegion = { data: flatTreeNode, type: 'node' };
     flameChartPlugin.renderEngine.render();
+
+    zoomOnNode(flatTreeNode);
+
     onSelect({ node: flatTreeNode, type: 'flame-chart-node' });
   }
 
@@ -103,6 +110,7 @@ function App() {
             className="flameChart"
             onSelect={onSelect}
             zoom={zoom}
+            position={position}
             instance={setFlameChartInstance}
           />
           <SpanDetails span={selectedSpan} />

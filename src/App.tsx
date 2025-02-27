@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FlameChartNode } from 'flame-chart-js';
+import { FlameChart, FlameChartNode, FlameChartPlugin } from 'flame-chart-js';
 import { FlameChartComponent, NodeTypes } from 'flame-chart-js/react';
 import { parseSingleTrace, Span } from './jaeger/trace';
 import { buildFlameChart, EnrichedFlameChartNode } from './jaeger/trace-flame-chart';
@@ -11,6 +11,11 @@ function App() {
   const [selectedSpan, setSelectedSpan] = useState<Span | undefined>();
   const [selectedAt, setSelectedAt] = useState<number | undefined>();
   const [zoom, setZoom] = useState<{start: number; end: number;} | undefined>();
+
+  var flameChartInstance: FlameChart | undefined = undefined;
+  function setFlameChartInstance(instance: FlameChart) {
+    flameChartInstance = instance;
+  }
 
   const settings = {
     hotkeys: {
@@ -62,6 +67,23 @@ function App() {
     setZoom({start: start, end: end});
   }
 
+  function selectNode(nodeToSelect: EnrichedFlameChartNode) {
+    if (flameChartInstance === undefined)
+      return;
+
+    const flameChartPlugin = flameChartInstance.plugins.find(plugin => plugin.name === 'flameChartPlugin') as FlameChartPlugin | undefined;
+    if (flameChartPlugin === undefined)
+      return;
+
+    const flatTreeNode = flameChartPlugin.flatTree.find(node => node.source === nodeToSelect);
+    if (flatTreeNode === undefined)
+      return;
+
+    flameChartPlugin.selectedRegion = { data: flatTreeNode, type: 'node' };
+    flameChartPlugin.renderEngine.render();
+    onSelect({ node: flatTreeNode, type: 'flame-chart-node' });
+  }
+
   return (
     <div className="App">
       { flameChartData === undefined &&
@@ -81,6 +103,7 @@ function App() {
             className="flameChart"
             onSelect={onSelect}
             zoom={zoom}
+            instance={setFlameChartInstance}
           />
           <SpanDetails span={selectedSpan} />
         </div>

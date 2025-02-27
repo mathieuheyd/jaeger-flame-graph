@@ -48,7 +48,7 @@ function App() {
       const sourceSpan = source?.sourceSpan;
       if (sourceSpan !== selectedSpan) {
         setSelectedSpan(sourceSpan);
-      } else if (selectedAt !== undefined && now - selectedAt < 500) {
+      } else if (selectedAt !== undefined && now - selectedAt < 300) {
         zoomOnNode(source);
       }
       setSelectedAt(now);

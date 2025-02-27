@@ -20,7 +20,7 @@ export type Process = {
 
 export type Span = {
   duration: number,
-  logs: any[],
+  logs: Log[],
   operationName: string,
   processID: string,
   references: SpanReference[],

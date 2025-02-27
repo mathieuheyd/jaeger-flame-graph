@@ -82,9 +82,7 @@ function App() {
             onSelect={onSelect}
             zoom={zoom}
           />
-          <div className="spanDetails">
-            <SpanDetails span={selectedSpan} />
-          </div>
+          <SpanDetails span={selectedSpan} />
         </div>
       }
     </div>

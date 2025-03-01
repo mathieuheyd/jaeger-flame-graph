@@ -68,3 +68,40 @@
 .spanDetails .content  pre {
   white-space: pre-wrap;
 }
+
+.searchBar {
+  position: absolute;
+  top: 80px;
+  right: 10px;
+  display: flex;
+  padding: 10px;
+  background-color: white;
+  border: solid 1px grey;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px grey;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-size: small;
+  color: darkgrey;
+}
+
+.searchBar .input {
+  display: flex;
+  justify-content: space-between;
+  width: 250px;
+  padding-right: 10px;
+}
+
+.searchBar .input input {
+  width: 180px;
+  border: 0;
+  outline: 0;
+}
+
+.searchBar .input span {
+  display: flex;
+  align-items: center;
+}
+
+.searchBar button:last-of-type {
+  margin-left: 5px;
+}

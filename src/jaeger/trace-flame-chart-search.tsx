@@ -1,16 +1,15 @@
-import { FlameChartNode } from "flame-chart-js/.";
 import { EnrichedFlameChartNode } from "./trace-flame-chart";
 import { Span } from "./trace";
 
-function search(rootNodes: EnrichedFlameChartNode[], text: string): FlameChartNode[] {
-  const matchingSpans: FlameChartNode[] = [];
+function search(rootNodes: EnrichedFlameChartNode[], text: string): EnrichedFlameChartNode[] {
+  const matchingSpans: EnrichedFlameChartNode[] = [];
 
   rootNodes.forEach(rootNode => searchInternal(rootNode, text, matchingSpans));
 
   return matchingSpans;
 }
 
-function searchInternal(node: EnrichedFlameChartNode, text: string, matchingSpans: FlameChartNode[]) {
+function searchInternal(node: EnrichedFlameChartNode, text: string, matchingSpans: EnrichedFlameChartNode[]) {
   if (node.sourceSpan !== undefined && doesSpanMatch(node.sourceSpan, text))
     matchingSpans.push(node);
 

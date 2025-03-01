@@ -1,22 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlameChart, FlameChartNode, FlameChartPlugin, FlatTreeNode } from 'flame-chart-js';
 import { FlameChartComponent, NodeTypes } from 'flame-chart-js/react';
 import { parseSingleTrace, Span } from './jaeger/trace';
 import { buildFlameChart, EnrichedFlameChartNode } from './jaeger/trace-flame-chart';
 import SpanDetails from './components/span-details';
+import SearchBar from './components/search-bar';
 import './App.css';
 
 function App() {
+  const [flameChartInstance, setFlameChartInstance] = useState<FlameChart | undefined>();
   const [flameChartData, setFlameChartData] = useState<FlameChartNode[] | undefined>();
   const [selectedSpan, setSelectedSpan] = useState<Span | undefined>();
   const [selectedAt, setSelectedAt] = useState<number | undefined>();
   const [zoom, setZoom] = useState<{start: number; end: number;} | undefined>();
   const [position, setPosition] = useState<{x: number; y: number;} | undefined>();
 
-  var flameChartInstance: FlameChart | undefined = undefined;
-  function setFlameChartInstance(instance: FlameChart) {
-    flameChartInstance = instance;
-  }
+  const [searchBarDisplayed, setSearchBarDisplayed] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && (e.key === "f" || e.key === "F")) {
+        e.preventDefault();
+        setSearchBarDisplayed(true);
+      }
+      if (e.key === "Escape") {
+        setSearchBarDisplayed(false);
+      }
+    };
+    window.addEventListener("keydown", handler);
+
+    return () => {
+      window.removeEventListener("keydown", handler);
+    };
+  }, []);
 
   const settings = {
     hotkeys: {
@@ -114,6 +130,13 @@ function App() {
             instance={setFlameChartInstance}
           />
           <SpanDetails span={selectedSpan} />
+          {searchBarDisplayed &&
+            <SearchBar
+              nodesToSearch={flameChartData as EnrichedFlameChartNode[]}
+              focus={selectNode}
+              close={() => setSearchBarDisplayed(false)}
+            />
+          }
         </div>
       }
     </div>

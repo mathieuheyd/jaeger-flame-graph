@@ -54,10 +54,10 @@ function SearchBar(props: SearchBarProps) {
           <span>{matches.length === 0 ? 0 : curentMatchIndex + 1}/{matches.length}</span>
         }
       </span>
-      <button className="previous" disabled={matches === undefined} onClick={previous}>
+      <button className="previous" disabled={matches === undefined || matches.length === 0} onClick={previous}>
         <i className="fa fa-chevron-up" />
       </button>
-      <button className="next" disabled={matches === undefined} onClick={next}>
+      <button className="next" disabled={matches === undefined || matches.length === 0} onClick={next}>
         <i className="fa fa-chevron-down" />
       </button>
       <button onClick={props.close}>

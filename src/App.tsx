@@ -19,7 +19,7 @@ function App() {
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.ctrlKey && (e.key === "f" || e.key === "F")) {
+      if ((e.ctrlKey || e.metaKey) && (e.key === "f" || e.key === "F")) {
         e.preventDefault();
         setSearchBarDisplayed(true);
       }

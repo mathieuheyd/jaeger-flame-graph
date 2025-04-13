@@ -43,7 +43,7 @@ function buildFlameChart(trace: TraceData): FlameChartNode[] {
   return flameChartNodes;
 }
 
-function buildNode(span: any, spansByParentId: Map<string, any[]>, traceStartTime: number, processes: ProcessesMap): EnrichedFlameChartNode {
+function buildNode(span: Span, spansByParentId: Map<string, Span[]>, traceStartTime: number, processes: ProcessesMap): EnrichedFlameChartNode {
   var childrenSpans = spansByParentId.get(span.spanID);
   var children: FlameChartNode[] = [];
   if (childrenSpans !== undefined) {
@@ -55,6 +55,7 @@ function buildNode(span: any, spansByParentId: Map<string, any[]>, traceStartTim
     duration: span.duration / 1000,
     children: children,
     color: getSpanColor(span, processes),
+    badge: getBadgeColor(span),
     sourceSpan: span
   };
 }
@@ -76,6 +77,33 @@ function getSpanColor(span: Span, processes: ProcessesMap): string {
     if (serviceName === "workspace-worker-api") return '#DD8451';
   }
   return '#B8B8B8';
+}
+
+enum LogLevel {
+  Info = 'Information',
+  Warn = 'Warning',
+  Error = 'Error'
+}
+
+function getBadgeColor(span: Span) : string | undefined {
+  var worstLogLevel: LogLevel | undefined = undefined;
+  span.logs.forEach(log => {
+    const logLevel = log.fields.find(f => f.key === "LogLevel")?.value as LogLevel | undefined;
+    if (logLevelSeverity(logLevel) > logLevelSeverity(worstLogLevel))
+      worstLogLevel = logLevel;
+  });
+
+  if (worstLogLevel === undefined) return undefined;
+  if (worstLogLevel === LogLevel.Info) return 'rgb(61, 184, 61)';
+  if (worstLogLevel === LogLevel.Warn) return 'rgb(175, 228, 28)';
+  if (worstLogLevel === LogLevel.Error) return 'rgb(127, 5, 0)';
+}
+
+function logLevelSeverity(logLevel: LogLevel | undefined): number {
+  if (logLevel === LogLevel.Info) return 1;
+  if (logLevel === LogLevel.Warn) return 2;
+  if (logLevel === LogLevel.Error) return 3;
+  return 0;
 }
 
 export { buildFlameChart };

@@ -1,6 +1,7 @@
 import { FlameChartNode } from "flame-chart-js/.";
 import { ProcessesMap, Span, TraceData } from "./trace";
 import { unclutter } from "../flame-chart/flame-chart-utils";
+import { getLogLevel, LogLevel } from "./log-utils";
 
 export type EnrichedFlameChartNode = FlameChartNode & {
   sourceSpan: Span;
@@ -79,24 +80,18 @@ function getSpanColor(span: Span, processes: ProcessesMap): string {
   return '#B8B8B8';
 }
 
-enum LogLevel {
-  Info = 'Information',
-  Warn = 'Warning',
-  Error = 'Error'
-}
-
 function getBadgeColor(span: Span) : string | undefined {
   var worstLogLevel: LogLevel | undefined = undefined;
   span.logs.forEach(log => {
-    const logLevel = log.fields.find(f => f.key === "LogLevel")?.value as LogLevel | undefined;
+    const logLevel = getLogLevel(log);
     if (logLevelSeverity(logLevel) > logLevelSeverity(worstLogLevel))
       worstLogLevel = logLevel;
   });
 
   if (worstLogLevel === undefined) return undefined;
-  if (worstLogLevel === LogLevel.Info) return 'rgb(61, 184, 61)';
-  if (worstLogLevel === LogLevel.Warn) return 'rgb(175, 228, 28)';
-  if (worstLogLevel === LogLevel.Error) return 'rgb(127, 5, 0)';
+  if (worstLogLevel === LogLevel.Info) return '#96c7df';
+  if (worstLogLevel === LogLevel.Warn) return '#edb259';
+  if (worstLogLevel === LogLevel.Error) return '#d15d54';
 }
 
 function logLevelSeverity(logLevel: LogLevel | undefined): number {

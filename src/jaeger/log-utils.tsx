@@ -1,5 +1,15 @@
 import { Log } from "./trace";
 
+export enum LogLevel {
+  Info = 'Information',
+  Warn = 'Warning',
+  Error = 'Error'
+}
+
+function getLogLevel(log: Log): LogLevel | undefined {
+  return log.fields.find(f => f.key === "LogLevel")?.value as LogLevel | undefined;
+}
+
 function isLogLine(log: Log): boolean {
   return getLogFormat(log) !== undefined;
 }
@@ -34,6 +44,7 @@ function getFormattingItems(log: Log): LogFormatItem[] {
 }
 
 export {
+  getLogLevel,
   isLogLine,
   formatLogLine
 }

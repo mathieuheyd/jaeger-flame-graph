@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { formatLogLine, isLogLine } from "../jaeger/log-utils";
-import { Span } from "../jaeger/trace";
+import { formatLogLine, getLogLevel, isLogLine, LogLevel } from "../jaeger/log-utils";
+import { Log, Span } from "../jaeger/trace";
 
 export type SpanDetailsProps = {
   span: Span | undefined;
@@ -14,6 +14,13 @@ enum Tab {
 type TabDetails = {
   type: Tab,
   name: string
+}
+
+function logClassName(log: Log): string | undefined {
+  const logLevel = getLogLevel(log);
+  if (logLevel === LogLevel.Info) return 'log log-info';
+  if (logLevel === LogLevel.Warn) return 'log log-warn';
+  if (logLevel === LogLevel.Error) return 'log log-error';
 }
 
 function SpanDetails(props: SpanDetailsProps) {
@@ -34,7 +41,7 @@ function SpanDetails(props: SpanDetailsProps) {
     second: 'numeric',
     hour12: false,
     fractionalSecondDigits: 3
-}
+  }
 
   return (
     <div className="spanDetails">
@@ -49,7 +56,7 @@ function SpanDetails(props: SpanDetailsProps) {
             return (<li key={i}><b>{tag.key}</b>: <pre>{tag.value}</pre></li>);
           }) }
           { selectedTab === Tab.Logs && logLines.map(log => {
-            return (<li key={log.timestamp}><b>{new Date(log.timestamp / 1000).toLocaleString('en-US', dateFormatOptions)}</b>: <pre>{formatLogLine(log)}</pre></li>);
+            return (<li className={logClassName(log)} key={log.timestamp}><b>{new Date(log.timestamp / 1000).toLocaleString('en-US', dateFormatOptions)}</b>: <pre>{formatLogLine(log)}</pre></li>);
           }) }
         </ul>
       </div>

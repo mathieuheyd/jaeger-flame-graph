@@ -65,6 +65,20 @@
   overflow-y: scroll;
 }
 
+.spanDetails .content .log {
+  list-style-type: "▮ ";
+}
+
+.spanDetails .content .log-info::marker {
+  color: #96c7df;
+}
+.spanDetails .content .log-warn::marker {
+  color: #edb259;
+}
+.spanDetails .content .log-error::marker {
+  color: #d15d54;
+}
+
 .spanDetails .content  pre {
   white-space: pre-wrap;
 }
